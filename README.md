@@ -217,6 +217,38 @@ sudo systemctl reload nginx
 > 
 
 ---
+## 🔹 Deployment Shell Script
+```bash
+#!/bin/bash
+set -x
+sudo apt update
+sudo apt install nginx -y
+cd /var/www
+sudo git clone https://github.com/Shubham-6364/codersdiary-nginx.git
+sudo chown -R www-data:www-data /var/www/codersdiary-nginx
+sudo chmod -R 755 /var/www/codersdiary-nginx
+CONFIG_PATH="/etc/nginx/sites-available/codersdiary-nginx"
+
+sudo tee "$CONFIG_PATH" > /dev/null <<'EOF'
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/codersdiary-nginx;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+EOF
+
+sudo ln -s /etc/nginx/sites-available/codersdiary-nginx /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
 
 ## 📌 Summary
 
